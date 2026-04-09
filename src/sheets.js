@@ -2,7 +2,7 @@
 // sheets.js — StockTrack v4
 // ⚠️  แก้แค่บรรทัดนี้หลัง Re-deploy Apps Script
 // ─────────────────────────────────────────────────────
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWmHbgo_rJwFoj-ebjZDyzV0nMMoP1x0f68WGHxvGNLcoaPTok5RH32Ni8_mOECQbYgQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqCfaKHwtIfZZbvgtxXedvG5SGwP-ZpXK4P3cZDGmqz6q_wwXsClzdq0HGyU-ca-QsqA/exec";
 
 // date helper: ส่งแค่ YYYY-MM-DD เสมอ
 const toDateStr = (d) => {
