@@ -2,7 +2,7 @@
 // sheets.js — StockTrack v2
 // ⚠️  แก้แค่บรรทัดนี้หลัง Deploy Apps Script
 // ─────────────────────────────────────────────────────
-const URL = "https://script.google.com/macros/s/AKfycbxcYQJ-ATPG1qPfu6s7QRHnHfiWcNKzKNTB2bfo8wRPVSpp69V4V0zcj0_IhhV2RaZq/exec";
+const URL = "https://script.google.com/macros/s/AKfycbxz1P3UbmkAvNtsXw8CF4iQAYsBH1CDM-TT0-NiJvzIUpbK-3i5veHuXUyHnIki84Eyew/exec";
 
 async function post(body) {
   const res = await fetch(URL, {
