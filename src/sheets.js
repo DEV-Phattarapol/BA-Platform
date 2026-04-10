@@ -1,14 +1,10 @@
 // ─────────────────────────────────────────────────────
-// sheets.js — StockTrack v4
-// ⚠️  แก้แค่บรรทัดนี้หลัง Re-deploy Apps Script
+// sheets.js — StockTrack v2
+// ⚠️  แก้แค่บรรทัดนี้หลัง Deploy Apps Script ใหม่
 // ─────────────────────────────────────────────────────
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqCfaKHwtIfZZbvgtxXedvG5SGwP-ZpXK4P3cZDGmqz6q_wwXsClzdq0HGyU-ca-QsqA/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw-RAw5nEKcO8EH4KeeMHdLRTwsw6SILhbCgxmXL7yViz3dJDrWsIMOBJPvfEtBn-nr/exec";
 
-// date helper: ส่งแค่ YYYY-MM-DD เสมอ
-const toDateStr = (d) => {
-  if (!d) return "";
-  return String(d).substring(0, 10);
-};
+const toDateStr = (d) => d ? String(d).substring(0, 10) : "";
 
 async function post(body) {
   const res = await fetch(SCRIPT_URL, {
@@ -18,43 +14,48 @@ async function post(body) {
   });
   if (!res.ok) throw new Error("Network error " + res.status);
   const data = await res.json();
-  if (data.status !== "ok") throw new Error(data.message ?? "Unknown error");
+  if (data.status !== "ok") throw new Error(data.message ?? "Error");
   return data;
 }
 
 async function get(params = {}) {
-  // normalize date ก่อนส่ง
   if (params.date) params.date = toDateStr(params.date);
-  const qs = new URLSearchParams(params).toString();
+  const qs  = new URLSearchParams(params).toString();
   const res = await fetch(`${SCRIPT_URL}?${qs}`);
   if (!res.ok) throw new Error("Network error " + res.status);
   const data = await res.json();
-  if (data.status !== "ok") throw new Error(data.message ?? "Unknown error");
+  if (data.status !== "ok") throw new Error(data.message ?? "Error");
   return data;
 }
 
 export const sheetsAPI = {
+  // ── Auth ─────────────────────────────────────────────
+  // คืน { branchId, branchName } หรือ throw error
+  login: (username, password) =>
+    post({ type: "login", username, password }),
+
+  // เปลี่ยนรหัสผ่าน
+  changePassword: (username, oldPassword, newPassword) =>
+    post({ type: "changePassword", username, oldPassword, newPassword }),
 
   // ── Master ───────────────────────────────────────────
   getMaster: () => get({ type: "master" }),
 
-  // ── Opening (upsert: Date + BranchID + ProductCode) ──
-  // rows: [[date, branchId, branchName, code, name, unit, mrp, opening, timestamp], ...]
+  // ── Opening ──────────────────────────────────────────
   saveOpening: (rows) => post({ type: "opening", rows }),
   getOpening:  (date, branch) => get({ type: "opening", date, branch: branch ?? "ALL" }),
 
-  // ── Replenishment (upsert by EntryID) ────────────────
-  // rows: [[date, branchId, branchName, code, name, unit, mrp, qty, txTime, entryId], ...]
+  // ── Replenishment ─────────────────────────────────────
   saveReplenishment: (rows) => post({ type: "replenishment", rows }),
   getReplenishment:  (date, branch) => get({ type: "replenishment", date, branch: branch ?? "ALL" }),
 
-  // ── Closing (upsert: Date + BranchID + ProductCode) ──
-  // rows: [[date, branchId, branchName, code, name, unit, mrp, saleReturn, closing, timestamp], ...]
+  // ── Closing ──────────────────────────────────────────
   saveClosing: (rows) => post({ type: "closing", rows }),
   getClosing:  (date, branch) => get({ type: "closing", date, branch: branch ?? "ALL" }),
 
   // ── Engagement ───────────────────────────────────────
-  saveEngagement: (summaryRow, detailRows) => post({ type: "engagement", summaryRow, detailRows }),
-  getEngDaily:    (date, branch) => get({ type: "engDaily",   date, branch: branch ?? "ALL" }),
-  getEngDetail:   (date, branch) => get({ type: "engDetail",  date, branch: branch ?? "ALL" }),
+  saveEngagement: (summaryRow, detailRows) =>
+    post({ type: "engagement", summaryRow, detailRows }),
+  getEngDaily:  (date, branch) => get({ type: "engDaily",  date, branch: branch ?? "ALL" }),
+  getEngDetail: (date, branch) => get({ type: "engDetail", date, branch: branch ?? "ALL" }),
 };
